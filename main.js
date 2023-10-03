@@ -1,4 +1,4 @@
-const ws = new WebSocket('wss://projectaledav1.onrender.com/8080');
+const ws = new WebSocket('wss://projectaledav1.onrender.com');
 
 ws.onopen = () => {
     console.log('WebSocket client connected');
