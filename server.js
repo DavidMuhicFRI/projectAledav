@@ -14,7 +14,7 @@ wss.on('connection', (ws) => {
         clients.push(c);
         let p = new Pair(c, null);
         pairs.push(p);
-        sendData(ws, "searching for a pair...", "notification");
+        sendData(ws, "searching for a pair..", "notification");
     }else{
         c = new Client(playerCount, ws, clients[playerCount - 1], 500, 200, " ");
         clients.push(c);
