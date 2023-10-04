@@ -13,12 +13,12 @@ wss.on('connection', (ws) => {
         clients.push(c);
         waiting.push(c);
         sendData(ws, "searching for a pair..", "notification");
-    findPair(c);
     ws.on('message', (message) => {
         let decomposed = JSON.parse(message);
         clients.forEach(function(client){
             if(ws === client.ws){
                 updateClients(client, decomposed);
+                findPair(c);
                 sendData(ws, decomposed, decomposed.reason);
             }
         });
@@ -30,8 +30,6 @@ function findPair(client){
         if(completed === 0 && waiter !== client){
             client.pair = waiter;
             waiter.pair = client;
-            client.left = waiter.left;
-            client.top = waiter.top;
             completed = 1;
             waiting = waiting.filter((element) => element !== waiter && element !== client);
             let pair = new Pair(client, waiter);
