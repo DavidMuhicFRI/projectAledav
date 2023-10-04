@@ -76,9 +76,7 @@ function sendData(socket, message, reason){
 function createJsonObject(reason, object){
     if(object.hasOwnProperty("reason")){
         object.reason = reason;
-        return {
-            object
-        };
+        return object;
     }
     return {
         reason: reason,

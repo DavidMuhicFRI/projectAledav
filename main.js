@@ -16,11 +16,11 @@ window.onload = function() {
         sendData("data");
     };
     ws.onmessage = (message) => {
-        const data = JSON.parse(message.data);
+        let data = JSON.parse(message.data);
         console.log("dobljeno od serverja: ");
         console.log(data);
-        console.log(data.reason);
         if(data.reason === "data"){
+            data = data.object;
             console.log("se popravlja enemy");
             console.log( data.object.left + "px");
             enemyBox.style.left = data.object.left + "px";
