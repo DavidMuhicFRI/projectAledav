@@ -27,20 +27,18 @@ wss.on('connection', (ws) => {
         sendData(c.pair.ws,  JSON.stringify(c.pair), "init");
     }
     ws.on('message', (message) => {
-        let c;
         clients.forEach(function(client){
             if(ws === client.ws){
-                c = client;
+                console.log(`Received message from client: ${message}`);
+                let decomposed = JSON.parse(message);
+                console.log("se parsa message");
+                if(decomposed.reason === "name"){
+                    client.name = decomposed.name;
+                }
+                updateData(client, decomposed);
+                sendData(ws, message,"data");
             }
         });
-        console.log(`Received message from client: ${message}`);
-        let decomposed = JSON.parse(message);
-        console.log("se parsa message");
-        if(decomposed.reason === "name"){
-            c.name = decomposed.name;
-        }
-        updateData(c, decomposed);
-        sendData(ws, message,"data");
     });
 });
 function sendData(socket, message, reason){
