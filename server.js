@@ -44,32 +44,29 @@ wss.on('connection', (ws) => {
     });
 });
 function sendData(socket, message, reason){
-    let user;
     clients.forEach(function (client) {
         if (client.ws === socket) {
-            user = client;
+            if(reason === "data") {
+                if(client.pair !== null) {
+                    message["reason"] = "data";
+                    client.pair.ws.send(message);
+                }
+            }else if(reason === "init"){
+                message["reason"] = "init";
+                client.pair.ws.send(message);
+            }else if(reason === "notification"){
+                let notif = new Notification(message);
+                let m = {reason: "notification", notif};
+                let mess = JSON.stringify(m);
+                socket.send(mess);
+            }else if(reason === "close"){
+                clients = clients.filter((c) => c !== client);
+                playerCount--;
+                pairCount--;
+                pairs = pairs.filter((pair) => pair.p1 !== client && pair.p2 !== client);
+            }
         }
-        console.log(user.pair);
     });
-    if(reason === "data") {
-        if(user.pair !== null) {
-            message["reason"] = "data";
-            user.pair.ws.send(message);
-        }
-    }else if(reason === "init"){
-        message["reason"] = "init";
-        user.pair.ws.send(message);
-    }else if(reason === "notification"){
-        let notif = new Notification(message);
-        let m = {reason: "notification", notif};
-        let mess = JSON.stringify(m);
-        socket.send(mess);
-    }else if(reason === "close"){
-        clients = clients.filter((client) => client !== user);
-        playerCount--;
-        pairCount--;
-        pairs = pairs.filter((pair) => pair.p1 !== user && pair.p2 !== user);
-    }
 }
 function updateData(client, message){
     client.left = message.left;
