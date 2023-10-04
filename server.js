@@ -24,8 +24,8 @@ wss.on('connection', (ws) => {
         pairCount++;
         sendData(ws, "pair found!", "notification");
         sendData(c.pair.ws, "pair found!", "notification");
-        sendData(ws, JSON.stringify(c), "init");
-        sendData(c.pair.ws,  JSON.stringify(c.pair), "init");
+        sendData(ws, c, "init");
+        sendData(c.pair.ws,  c.pair, "init");
         console.log("completed inicialization of a pair");
     }
     ws.on('message', (message) => {
@@ -54,6 +54,7 @@ function sendData(socket, message, reason){
                     client.pair.ws.send(message);
                 }
             }else if(reason === "init"){
+                message = JSON.stringify(message);
                 message["reason"] = "init";
                 message = JSON.stringify(message);
                 console.log("poslan init message:");
