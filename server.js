@@ -49,11 +49,14 @@ function sendData(socket, message, reason){
         if (client.ws === socket) {
             user = client;
         }
-    });//poslje paru od socketa message
-    if(reason === "data" && user.pair !== null) {
-        message["reason"] = "data";
-        user.pair.ws.send(message);
-    }else if(reason === "init" && user.pair !== null){
+        console.log(user.pair);
+    });
+    if(reason === "data") {
+        if(user.pair !== null) {
+            message["reason"] = "data";
+            user.pair.ws.send(message);
+        }
+    }else if(reason === "init"){
         message["reason"] = "init";
         user.pair.ws.send(message);
     }else if(reason === "notification"){
