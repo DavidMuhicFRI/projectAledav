@@ -47,6 +47,7 @@ function sendData(socket, message, reason){//poslje paru od socketa message
     if(reason === "data" && socket.pair !== null) {
         clients.forEach(function (client) {
             if (client.ws === socket) {
+                console.log("pogoj izpolnjen, pair = " + client.pair);
                 message["reason"] = "data";
                 client.pair.ws.send(message);
             }
@@ -60,7 +61,7 @@ function sendData(socket, message, reason){//poslje paru od socketa message
         });
     }else if(reason === "notification"){
         let notif = new Notification(message);
-        let m = {reason: "notification", notif};
+        let m    = {reason: "notification", notif};
         let mess = JSON.stringify(m);
         socket.send(mess);
     }

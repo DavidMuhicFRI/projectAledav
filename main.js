@@ -15,7 +15,6 @@ window.onload = function() {
         let name = $("#nameBox").val();
         $("#playerBox").text(name);
         user.name = name;
-        ws.send("hello");
         sendData("name");
     }
     ws.onopen = () => {
@@ -41,7 +40,7 @@ window.onload = function() {
             $("body").append(newDiv);
             enemyBox = newDiv;
         }else if(data.reason === "notification"){
-            console.log(data.info);
+            console.log(data.notif.info);
         }
     };
     ws.onclose = () => {
