@@ -24,7 +24,8 @@ window.onload = function() {
     };
     ws.onmessage = (message) => {
         const data = JSON.parse(message.data);
-        console.log("dobljeno od serverja: " + data);
+        console.log("dobljeno od serverja: ");
+        console.log(data);
         if(data.reason === "data"){
             updateEnemy(data);
         }else if(data.reason === "init"){

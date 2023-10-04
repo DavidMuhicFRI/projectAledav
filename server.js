@@ -53,6 +53,8 @@ function sendData(socket, message, reason){
                 }
             }else if(reason === "init"){
                 message["reason"] = "init";
+                console.log("poslan init message:");
+                console.log(message);
                 client.pair.ws.send(message);
             }else if(reason === "notification"){
                 let notif = new Notification(message);
