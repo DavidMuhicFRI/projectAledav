@@ -17,6 +17,7 @@ wss.on('connection', (ws) => {
         sendData(ws, "searching for a pair...", "notification");
     }else{
         c = new Client(playerCount, ws, clients[playerCount - 1], 500, 200, " ");
+        clients.push(c);
         clients[playerCount - 1].pair = c;
         playerCount++;
         pairs[pairCount].p2 = c;
@@ -30,7 +31,8 @@ wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         clients.forEach(function(client){
             if(ws === client.ws){
-                console.log(`Received message from client: ${message}`);
+                console.log("Received message from client " + client.id +":");
+                console.log(message);
                 let decomposed = JSON.parse(message);
                 if(decomposed.reason === "name"){
                     client.name = decomposed.name;
