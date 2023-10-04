@@ -20,16 +20,16 @@ window.onload = function() {
         console.log("dobljeno od serverja: ");
         console.log(data);
         if(data.reason === "data"){
-            enemyBox.style.left = data.left + "px";
-            enemyBox.style.top = data.top + "px";
-            $("#enemyName").text(data.name);
+            enemyBox.style.left = data.object.left + "px";
+            enemyBox.style.top = data.object.top + "px";
+            $("#enemyName").text(data.object.name);
         }else if(data.reason === "init"){
             console.log("poskus inicializacije enemy kvadratka");
             enemyBox.style.visibility = "visible";
-            enemyBox.style.left = data.left + "px";
-            enemyBox.style.top = data.top + "px";
+            enemyBox.style.left = data.object.left + "px";
+            enemyBox.style.top = data.object.top + "px";
         }else if(data.reason === "notification"){
-            console.log("INFORMATION: " + data.info);
+            console.log("INFORMATION: " + data.object.info);
         }else if(data.reason === "pairDisc"){
             enemyBox.style.visibility = "hidden";
         }

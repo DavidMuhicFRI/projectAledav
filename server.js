@@ -84,9 +84,9 @@ function createJsonObject(reason, object){
     };
 }
 function updateClients(client, message) {
-    client.left = message.left;
-    client.top = message.top;
-    client.name = message.name;
+    client.left = message.object.left;
+    client.top = message.object.top;
+    client.name = message.object.name;
 }
 
 class Notification{
