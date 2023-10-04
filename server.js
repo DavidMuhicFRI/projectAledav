@@ -25,6 +25,7 @@ wss.on('connection', (ws) => {
         sendData(c.pair.ws, "pair found!", "notification");
         sendData(ws, JSON.stringify(c), "init");
         sendData(c.pair.ws,  JSON.stringify(c.pair), "init");
+        console.log("completed inicialization of a pair");
     }
     ws.on('message', (message) => {
         clients.forEach(function(client){
