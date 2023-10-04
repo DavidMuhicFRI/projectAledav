@@ -19,7 +19,9 @@ window.onload = function() {
         const data = JSON.parse(message.data);
         console.log("dobljeno od serverja: ");
         console.log(data);
+        console.log(data.reason);
         if(data.reason === "data"){
+            console.log("se popravlja enemy");
             console.log( data.object.left + "px");
             enemyBox.style.left = data.object.left + "px";
             enemyBox.style.top = data.object.top + "px";
