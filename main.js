@@ -30,7 +30,8 @@ window.onload = function() {
             enemyBox.style.top = data.object.top + "px";
         }else if(data.reason === "notification"){
             console.log("INFORMATION: " + data.object.info);
-        }else if(data.reason === "pairDisc"){
+        }else if(data.reason === "close"){
+            console.log("INFORMATION: " + data.object.info);
             enemyBox.style.visibility = "hidden";
         }
     };
