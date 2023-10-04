@@ -7,7 +7,6 @@ const wss = new WebSocket.Server({ port: 8080 });
 console.log('WebSocket server is running!');
 wss.on('connection', (ws) => {
     console.log('connected');
-    sendData(ws, `Welcome, Client ${playerCount}!`, "notification");
     let c;
     if(playerCount % 2 === 0){
         c = new Client(playerCount, ws, null, 200, 200, " ");
@@ -44,7 +43,7 @@ wss.on('connection', (ws) => {
     });
 });
 function sendData(socket, message, reason){//poslje paru od socketa message
-    if(reason === "data") {
+    if(reason === "data" && socket.pair !== null) {
         clients.forEach(function (client) {
             if (client.ws === socket) {
                 message["reason"] = "data";
