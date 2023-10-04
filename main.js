@@ -8,15 +8,9 @@ window.onload = function() {
     }
     const ws = new WebSocket('wss://projectaledav1.onrender.com');
     const playerBox1 = document.getElementById("playerBox");
-    const nameBoxS = document.getElementById("nameBoxS");
     let enemyBox = document.getElementById("enemyBox");
-    let user = new Player(playerBox1.offsetLeft, playerBox1.offsetTop, "");
-    nameBoxS.onclick = function(){
-        let name = $("#nameBox").val();
-        $("#playerName").text(name);
-        user.name = name;
-        sendData("name");
-    }
+    const nameBoxS = document.getElementById("nameBoxS");//button s katerim posodobimo svoje ime. Se bo odstranil ko dodamo login or simple login aka izbiro username
+    let user = new Player(playerBox1.offsetLeft, playerBox1.offsetTop, "");//glej Player class
     ws.onopen = () => {
         console.log('WebSocket client connected');
         sendData("data");
@@ -36,13 +30,21 @@ window.onload = function() {
             enemyBox.style.top = data.top + "px";
         }else if(data.reason === "notification"){
             console.log("INFORMATION: " + data.notif.info);
+        }else if(data.reason === "pairDisc"){
+            enemyBox.style.visibility = "hidden";
         }
     };
     ws.onclose = () => {
         sendData("close");
         console.log('closed');
     };
-    document.addEventListener("keydown", function (event) {
+    nameBoxS.onclick = function(){
+        let name = $("#nameBox").val();
+        $("#playerName").text(name);
+        user.name = name;
+        sendData("data");
+    }
+    document.addEventListener("keydown", function (event) {//za premike kvadratkov
         if(event.key === 'a' || event.key === 's' || event.key === 'd' || event.key === 'w') {
             if (event.key === "a") {
                 playerBox1.style.left = playerBox1.offsetLeft - 3 + "px";
@@ -60,9 +62,15 @@ window.onload = function() {
     });
 
     function sendData(reason) {
-        let message = JSON.stringify(user);
-        message["reason"] = reason;
-        console.log("TO POSLJEMO SERVERJU: " + message);
-        ws.send(message);
+        let json = JSON.stringify(addReason(reason, user));
+        console.log("TO POSLJEMO SERVERJU: " + json);
+        ws.send(json);
+    }
+
+    function addReason(reason, object){
+        return {
+            reason: reason,
+            object
+        }
     }
 }

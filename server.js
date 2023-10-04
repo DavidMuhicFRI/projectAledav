@@ -1,84 +1,91 @@
 const WebSocket = require('ws');
-let playerCount = 0;
+let playerID = 0;
 let pairCount = 0;
 let clients = [];
 let pairs = [];
+let waiting = [];
 const wss = new WebSocket.Server({ port: 8080 });
 console.log('WebSocket server is running!');
 wss.on('connection', (ws) => {
     console.log('connected');
-    let c;
-    if(playerCount % 2 === 0){
-        c = new Client(playerCount, ws, null, 200, 200, " ");
-        playerCount++;
+        let c = new Client(playerID, ws, null, 0, 0, " ");
+        playerID++;
         clients.push(c);
-        let p = new Pair(c, null);
-        pairs.push(p);
+        waiting.push(c);
         sendData(ws, "searching for a pair..", "notification");
-    }else{
-        c = new Client(playerCount, ws, clients[playerCount - 1], 500, 200, " ");
-        clients.push(c);
-        clients[playerCount - 1].pair = c;
-        playerCount++;
-        pairs[pairCount].p2 = c;
-        pairCount++;
-        sendData(ws, "pair found!", "notification");
-        sendData(c.pair.ws, "pair found!", "notification");
-        sendData(ws, c, "init");
-        sendData(c.pair.ws,  c.pair, "init");
-        console.log("completed inicialization of a pair");
-    }
+    findPair(c);
     ws.on('message', (message) => {
-        console.log(message);
+        let decomposed = JSON.parse(message);
         clients.forEach(function(client){
             if(ws === client.ws){
-                console.log("received from client " + client.id + "^^");
-                let decomposed = JSON.parse(message);
-                if(decomposed.reason === "name"){
-                    client.name = decomposed.name;
-                }
-                updateData(client, decomposed);
-                sendData(ws, decomposed,"data");
+                updateClients(client, decomposed);
+                sendData(ws, decomposed, decomposed.reason);
             }
         });
     });
 });
+function findPair(client){
+    let completed = 0;
+    waiting.forEach(function(waiter){
+        if(completed === 0 && waiter !== client){
+            client.pair = waiter;
+            waiter.pair = client;
+            completed = 1;
+            waiting = waiting.filter((element) => element !== waiter && element !== client);
+            let pair = new Pair(client, waiter);
+            pairs.push(pair);
+            sendData(client.ws, "pair found!", "notification");
+            sendData(waiter.ws, "pair found!", "notification");
+            sendData(waiter.ws, waiter, "init");//send the info about the other pair
+            sendData(client.ws,  client, "init");
+            console.log("completed inicialization of a pair");
+        }
+    })
+    if(completed === 0){
+        console.log("no pair found");
+    }
+}
 function sendData(socket, message, reason){
     clients.forEach(function (client) {
         if (client.ws === socket) {
             if(reason === "data") {
                 if(client.pair !== null) {
-                    message["reason"] = "data";
-                    message = JSON.stringify(message);
-                    console.log(message);
-                    client.pair.ws.send(message);
+                    client.pair.ws.send(JSON.stringify(createJsonObject(reason, message)));
                 }
             }else if(reason === "init"){
-                let json = {
-                    reason: "init",
-                    object: message
-                }
-                json = JSON.stringify(json);
-                console.log("poslan init message:");
-                console.log(json);
-                client.pair.ws.send(json);
+                client.pair.ws.send(JSON.stringify(createJsonObject(reason, message)));
             }else if(reason === "notification"){
                 let notif = new Notification(message);
-                let m = {reason: "notification", notif};
-                let mess = JSON.stringify(m);
-                socket.send(mess);
+                socket.send(JSON.stringify(createJsonObject(reason, notif)));
             }else if(reason === "close"){
                 clients = clients.filter((c) => c !== client);
-                playerCount--;
+                let notif = new Notification("your partner left ;-( waiting for another session");
+                client.pair.ws.send(JSON.stringify(createJsonObject(reason, notif)));
+                waiting.push(client.pair);
+                findPair(client.pair);
                 pairCount--;
                 pairs = pairs.filter((pair) => pair.p1 !== client && pair.p2 !== client);
             }
         }
     });
 }
-function updateData(client, message){
+
+function createJsonObject(reason, message){
+    if(message.hasOwnProperty("reason")){
+        message.reason = reason;
+        return {
+            message
+        };
+    }
+    return {
+        reason: reason,
+        message
+    };
+}
+function updateClients(client, message) {
     client.left = message.left;
     client.top = message.top;
+    client.name = message.name;
 }
 
 class Notification{
