@@ -61,6 +61,11 @@ function sendData(socket, message, reason){
         let m = {reason: "notification", notif};
         let mess = JSON.stringify(m);
         socket.send(mess);
+    }else if(reason === "close"){
+        clients = clients.filter((client) => client !== user);
+        playerCount--;
+        pairCount--;
+        pairs = pairs.filter((pair) => pair.p1 !== user && pair.p2 !== user);
     }
 }
 function updateData(client, message){

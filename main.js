@@ -13,7 +13,7 @@ window.onload = function() {
     let user = new Player(playerBox1.offsetLeft, playerBox1.offsetTop, "");
     nameBoxS.onclick = function(){
         let name = $("#nameBox").val();
-        $("#playerBox").text(name);
+        $("#playerName").text(name);
         user.name = name;
         sendData("name");
     }
@@ -44,6 +44,7 @@ window.onload = function() {
         }
     };
     ws.onclose = () => {
+        sendData("close");
         console.log('closed');
     };
     document.addEventListener("keydown", function (event) {
@@ -60,7 +61,6 @@ window.onload = function() {
     });
 
     function sendData(reason){
-        console.log("se izvede");
         let message = JSON.stringify(user);
         message["reason"] = reason;
         ws.send(message);
