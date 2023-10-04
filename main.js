@@ -63,6 +63,7 @@ window.onload = function() {
     function sendData(reason){
         let message = JSON.stringify(user);
         message["reason"] = reason;
+        console.log(message);
         ws.send(message);
     }
 

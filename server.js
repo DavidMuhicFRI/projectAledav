@@ -47,6 +47,7 @@ function sendData(socket, message, reason){
             if(reason === "data") {
                 if(client.pair !== null) {
                     message["reason"] = "data";
+                    console.log(message);
                     client.pair.ws.send(message);
                 }
             }else if(reason === "init"){
