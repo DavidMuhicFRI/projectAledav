@@ -43,25 +43,22 @@ wss.on('connection', (ws) => {
         sendData(ws, message,"data");
     });
 });
-function sendData(socket, message, reason){//poslje paru od socketa message
-    if(reason === "data" && socket.pair !== null) {
-        clients.forEach(function (client) {
-            if (client.ws === socket) {
-                console.log("pogoj izpolnjen, pair = " + client.pair);
-                message["reason"] = "data";
-                client.pair.ws.send(message);
-            }
-        });
-    }else if(reason === "init" && socket.pair !== null){
-        clients.forEach(function (client) {
-            if (client.ws === socket) {
-                message["reason"] = "init";
-                client.pair.ws.send(message);
-            }
-        });
+function sendData(socket, message, reason){
+    let user;
+    clients.forEach(function (client) {
+        if (client.ws === socket) {
+            user = client;
+        }
+    });//poslje paru od socketa message
+    if(reason === "data" && user.pair !== null) {
+        message["reason"] = "data";
+        user.pair.ws.send(message);
+    }else if(reason === "init" && user.pair !== null){
+        message["reason"] = "init";
+        user.pair.ws.send(message);
     }else if(reason === "notification"){
         let notif = new Notification(message);
-        let m    = {reason: "notification", notif};
+        let m = {reason: "notification", notif};
         let mess = JSON.stringify(m);
         socket.send(mess);
     }
