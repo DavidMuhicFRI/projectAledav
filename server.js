@@ -10,48 +10,59 @@ wss.on('connection', (ws) => {
     ws.send(`Welcome, Client ${playerCount}!`);
     let c;
     if(playerCount % 2 === 0){
-        c = new Client(playerCount, ws, null, 200, 200, null);
+        c = new Client(playerCount, ws, null, 200, 200, " ");
         playerCount++;
         clients.push(c);
         let p = new Pair(c, null);
         pairs.push(p);
         ws.send("searching for a pair...");
     }else{
-        c = new Client(playerCount, ws, clients[playerCount - 1], 500, 200, null);
+        c = new Client(playerCount, ws, clients[playerCount - 1], 500, 200, " ");
         clients[playerCount - 1].pair = c;
         playerCount++;
         pairs[pairCount].p2 = c;
         pairCount++;
         ws.send("pair found!");
         c.pair.ws.send("pair found!");
-        sendData(ws, "data");
-        sendData(c.pair.ws, "data");
+        sendData(ws, JSON.stringify(c), "init");
+        sendData(c.pair.ws,  JSON.stringify(c.pair), "init");
     }
     ws.on('message', (message) => {
+        let c;
+        clients.forEach(function(client){
+            if(ws === client.ws){
+                c = client;
+            }
+        });
         console.log(`Received message from client: ${message}`);
         let decomposed = JSON.parse(message);
         if(decomposed.reason === "name"){
-            clients.forEach(function(client){
-                if(ws === client.ws){
-                    client.name = decomposed.name;
-                }
-            })
+            c.name = decomposed.name;
         }
-        sendData(ws,"data");
+        updateData(c, decomposed);
+        sendData(ws, message,"data");
     });
 });
-function sendData(socket, reason){//poslje paru od socketa message
+function sendData(socket, message, reason){//poslje paru od socketa message
     if(reason === "data") {
-        let message;
         clients.forEach(function (client) {
             if (client.ws === socket) {
-                let pair = client.pair.ws;
-                message = JSON.stringify(client);
-                message.reason = reason;
-                pair.send(message);
+                message["reason"] = "data";
+                client.pair.ws.send(message);
+            }
+        });
+    }else if(reason === "init"){
+        clients.forEach(function (client) {
+            if (client.ws === socket) {
+                message["reason"] = "init";
+                client.pair.ws.send(message);
             }
         });
     }
+}
+function updateData(client, message){
+    client.left = message.left;
+    client.top = message.top;
 }
 class Client{
     constructor(id, ws, pair, left, top, name) {

@@ -6,3 +6,10 @@
     width: 10%;
     background-color: black;
 }
+#nameBoxS{
+    position: absolute;
+    left: 190px;
+    top: 6px;
+    background-color: red;
+    color: white;
+}
