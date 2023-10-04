@@ -16,3 +16,17 @@
 #playerName{
     color: white;
 }
+
+#enemyName{
+    color: white;
+}
+
+#enemyBox{
+    position: absolute;
+    left: 20%;
+    top: 20%;
+    height: 10%;
+    width: 10%;
+    background-color: blue;
+    visibility: hidden;
+}

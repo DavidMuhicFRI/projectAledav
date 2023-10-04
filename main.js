@@ -10,7 +10,6 @@ window.onload = function() {
     const playerBox1 = document.getElementById("playerBox");
     const nameBoxS = document.getElementById("nameBoxS");
     let enemyBox = document.getElementById("enemyBox");
-    let enemyName = document.getElementById("enemyName");
     let user = new Player(playerBox1.offsetLeft, playerBox1.offsetTop, "");
     nameBoxS.onclick = function(){
         let name = $("#nameBox").val();
@@ -27,9 +26,12 @@ window.onload = function() {
         console.log("dobljeno od serverja: ");
         console.log(data);
         if(data.reason === "data"){
-            updateEnemy(data);
+            enemyBox.style.left = data.left + "px";
+            enemyBox.style.top = data.top + "px";
+            $("#enemyName").text(data.name);
         }else if(data.reason === "init"){
             console.log("poskus inicializacije enemy kvadratka");
+            enemyBox.style.visibility = "visible";
             enemyBox.style.left = data.left + "px";
             enemyBox.style.top = data.top + "px";
         }else if(data.reason === "notification"){
@@ -57,16 +59,10 @@ window.onload = function() {
         }
     });
 
-    function sendData(reason){
+    function sendData(reason) {
         let message = JSON.stringify(user);
         message["reason"] = reason;
         console.log("TO POSLJEMO SERVERJU: " + message);
         ws.send(message);
-    }
-
-    function updateEnemy(enemyBox, data){
-        enemyBox.style.left = data.left + "px";
-        enemyBox.style.top = data.top + "px";
-        $("#enemyName").text(data.name);
     }
 }

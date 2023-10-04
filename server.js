@@ -55,6 +55,7 @@ function sendData(socket, message, reason){
                 }
             }else if(reason === "init"){
                 message["reason"] = "init";
+                message = JSON.stringify(message);
                 console.log("poslan init message:");
                 console.log(message);
                 client.pair.ws.send(message);
