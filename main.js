@@ -20,6 +20,7 @@ window.onload = function() {
         console.log("dobljeno od serverja: ");
         console.log(data);
         if(data.reason === "data"){
+            console.log( data.object.left + "px");
             enemyBox.style.left = data.object.left + "px";
             enemyBox.style.top = data.object.top + "px";
             $("#enemyName").text(data.object.name);

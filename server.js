@@ -30,6 +30,8 @@ function findPair(client){
         if(completed === 0 && waiter !== client){
             client.pair = waiter;
             waiter.pair = client;
+            client.left = waiter.left;
+            client.top = waiter.top;
             completed = 1;
             waiting = waiting.filter((element) => element !== waiter && element !== client);
             let pair = new Pair(client, waiter);
