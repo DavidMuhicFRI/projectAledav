@@ -31,12 +31,11 @@ wss.on('connection', (ws) => {
             if(ws === client.ws){
                 console.log(`Received message from client: ${message}`);
                 let decomposed = JSON.parse(message);
-                console.log("se parsa message");
                 if(decomposed.reason === "name"){
                     client.name = decomposed.name;
                 }
                 updateData(client, decomposed);
-                sendData(ws, message,"data");
+                sendData(ws, decomposed,"data");
             }
         });
     });
@@ -47,6 +46,7 @@ function sendData(socket, message, reason){
             if(reason === "data") {
                 if(client.pair !== null) {
                     message["reason"] = "data";
+                    message = JSON.stringify(message);
                     console.log(message);
                     client.pair.ws.send(message);
                 }

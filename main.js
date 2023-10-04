@@ -57,6 +57,8 @@ window.onload = function() {
         }else if (event.key === "s") {
             playerBox1.style.top = playerBox1.offsetTop + 3 + "px";
         }
+        user.left = playerBox1.offsetLeft;
+        user.top = playerBox1.offsetTop;
         sendData("data");
     });
 
