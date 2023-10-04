@@ -54,12 +54,14 @@ function sendData(socket, message, reason){
                     client.pair.ws.send(message);
                 }
             }else if(reason === "init"){
-                message = JSON.stringify(message);
-                message["reason"] = "init";
-                message = JSON.stringify(message);
+                let json = {
+                    reason: "init",
+                    object: message
+                }
+                json = JSON.stringify(json);
                 console.log("poslan init message:");
-                console.log(message);
-                client.pair.ws.send(message);
+                console.log(json);
+                client.pair.ws.send(json);
             }else if(reason === "notification"){
                 let notif = new Notification(message);
                 let m = {reason: "notification", notif};
