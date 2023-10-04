@@ -8,7 +8,8 @@ window.onload = function() {
     ws.onmessage = (message) => {
         console.log(`Received message from server: ${message}`);
         const dataReceived = JSON.parse(message);
-        console.log('Message:', dataReceived.message);
+        console.log("Reason : ", dataReceived.reason);
+        console.log('pairName:', dataReceived.name);
         console.log('pairLeft:', dataReceived.left);
         console.log('pairTop:', dataReceived.top);
     };

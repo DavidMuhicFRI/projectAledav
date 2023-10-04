@@ -22,8 +22,10 @@ wss.on('connection', (ws) => {
         playerCount++;
         pairs[pairCount].p2 = c;
         pairCount++;
-        ws.send("pair found: " + c.pair.id + "!");
-        c.pair.ws.send("pair found: " + c.id + "!");
+        ws.send("pair found!");
+        c.pair.ws.send("pair found!");
+        sendData(ws, "data");
+        sendData(c.pair.ws, "data");
     }
     ws.on('message', (message) => {
         console.log(`Received message from client: ${message}`);
@@ -35,17 +37,21 @@ wss.on('connection', (ws) => {
                 }
             })
         }
-        sendData(ws, message);
+        sendData(ws,"data");
     });
 });
-function sendData(socket, message){
-    clients.forEach(function(client){
-        if(client.ws === socket){
-            let pair = client.pair.ws;
-            message = JSON.stringify(client);
-            pair.send(message);
-        }
-    });
+function sendData(socket, reason){//poslje paru od socketa message
+    if(reason === "data") {
+        let message;
+        clients.forEach(function (client) {
+            if (client.ws === socket) {
+                let pair = client.pair.ws;
+                message = JSON.stringify(client);
+                message.reason = reason;
+                pair.send(message);
+            }
+        });
+    }
 }
 class Client{
     constructor(id, ws, pair, left, top, name) {
@@ -55,6 +61,14 @@ class Client{
         this.left = left;
         this.top = top;
         this.name = name;
+    }
+
+    toJSON() {
+        return {
+            name: this.name,
+            left: this.left,
+            top: this.top
+        };
     }
 }
 class Pair{
