@@ -22,7 +22,7 @@ wss.on('connection', (ws) => {
         pairs[pairCount].p2 = c;
         pairCount++;
         sendData(ws, "pair found!", "notification");
-        sendData(ws, "pair found!", "notification");
+        sendData(c.pair.ws, "pair found!", "notification");
         sendData(ws, JSON.stringify(c), "init");
         sendData(c.pair.ws,  JSON.stringify(c.pair), "init");
     }
@@ -35,6 +35,7 @@ wss.on('connection', (ws) => {
         });
         console.log(`Received message from client: ${message}`);
         let decomposed = JSON.parse(message);
+        console.log("se parsa message");
         if(decomposed.reason === "name"){
             c.name = decomposed.name;
         }
@@ -58,7 +59,7 @@ function sendData(socket, message, reason){//poslje paru od socketa message
             }
         });
     }else if(reason === "notification"){
-        let notif = new Notification(message, socket);
+        let notif = new Notification(message);
         let m = JSON.stringify(notif);
         m["reason"] = "notification";
         socket.send(m);
@@ -70,8 +71,7 @@ function updateData(client, message){
 }
 
 class Notification{
-    constructor(info, ws) {
-        this.ws = ws
+    constructor(info) {
         this.info = info;
     }
 }

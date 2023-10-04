@@ -15,6 +15,7 @@ window.onload = function() {
         let name = $("#nameBox").val();
         $("#playerBox").text(name);
         user.name = name;
+        ws.send("hello");
         sendData("name");
     }
     ws.onopen = () => {
@@ -64,6 +65,7 @@ window.onload = function() {
     });
 
     function sendData(reason){
+        console.log("se izvede");
         let message = JSON.stringify(user);
         message["reason"] = reason;
         ws.send(message);
