@@ -20,9 +20,6 @@ window.onload = function() {
         console.log("dobljeno od serverja: ");
         console.log(data);
         if(data.reason === "data"){
-            data = data.object;
-            console.log("se popravlja enemy");
-            console.log( data.object.left + "px");
             enemyBox.style.left = data.object.left + "px";
             enemyBox.style.top = data.object.top + "px";
             $("#enemyName").text(data.object.name);
@@ -37,16 +34,16 @@ window.onload = function() {
             enemyBox.style.visibility = "hidden";
         }
     };
-    ws.onclose = () => {
-        sendData("close");
-        console.log('closed');
-    };
     nameBoxS.onclick = function(){
         let name = $("#nameBox").val();
         $("#playerName").text(name);
         user.name = name;
         sendData("data");
     }
+    window.addEventListener('beforeunload', () => {
+        sendData("close");
+        ws.close();
+    });
     document.addEventListener("keydown", function (event) {//za premike kvadratkov
         if(event.key === 'a' || event.key === 's' || event.key === 'd' || event.key === 'w') {
             if (event.key === "a") {
