@@ -58,6 +58,7 @@ function sendData(socket, message, reason){
                 let notif = new Notification(message);
                 socket.send(JSON.stringify(createJsonObject(reason, notif)));
             }else if(reason === "close"){
+                console.log("a client left");
                 clients = clients.filter((c) => c !== client);
                 let notif = new Notification("your partner left ;-( waiting for another session");
                 client.pair.ws.send(JSON.stringify(createJsonObject(reason, notif)));
@@ -70,16 +71,16 @@ function sendData(socket, message, reason){
     });
 }
 
-function createJsonObject(reason, message){
-    if(message.hasOwnProperty("reason")){
-        message.reason = reason;
+function createJsonObject(reason, object){
+    if(object.hasOwnProperty("reason")){
+        object.reason = reason;
         return {
-            message
+            object
         };
     }
     return {
         reason: reason,
-        message
+        object
     };
 }
 function updateClients(client, message) {

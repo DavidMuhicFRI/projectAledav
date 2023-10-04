@@ -29,7 +29,7 @@ window.onload = function() {
             enemyBox.style.left = data.left + "px";
             enemyBox.style.top = data.top + "px";
         }else if(data.reason === "notification"){
-            console.log("INFORMATION: " + data.notif.info);
+            console.log("INFORMATION: " + data.info);
         }else if(data.reason === "pairDisc"){
             enemyBox.style.visibility = "hidden";
         }
