@@ -29,10 +29,10 @@ wss.on('connection', (ws) => {
         console.log("completed inicialization of a pair");
     }
     ws.on('message', (message) => {
+        console.log(message);
         clients.forEach(function(client){
             if(ws === client.ws){
-                console.log("Received message from client " + client.id +":");
-                console.log(message);
+                console.log("received from client " + client.id + "^^");
                 let decomposed = JSON.parse(message);
                 if(decomposed.reason === "name"){
                     client.name = decomposed.name;

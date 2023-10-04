@@ -9,8 +9,8 @@ window.onload = function() {
     const ws = new WebSocket('wss://projectaledav1.onrender.com');
     const playerBox1 = document.getElementById("playerBox");
     const nameBoxS = document.getElementById("nameBoxS");
-    let enemyBox;
-    let enemyName;
+    let enemyBox = document.getElementById("enemyBox");
+    let enemyName = document.getElementById("enemyName");
     let user = new Player(playerBox1.offsetLeft, playerBox1.offsetTop, "");
     nameBoxS.onclick = function(){
         let name = $("#nameBox").val();
@@ -29,19 +29,9 @@ window.onload = function() {
         if(data.reason === "data"){
             updateEnemy(data);
         }else if(data.reason === "init"){
-            enemyBox = document.createElement("div");
-            enemyBox.id = "enemyBox";
-            enemyBox.style.backgroundColor = "blue";
-            enemyBox.style.color = "white";
-            enemyBox.style.position = "absolute";
+            console.log("poskus inicializacije enemy kvadratka");
             enemyBox.style.left = data.left + "px";
             enemyBox.style.top = data.top + "px";
-            enemyBox.text(data.name);
-            enemyName = document.createElement("p");
-            enemyName.id = "enemyName";
-            $("#enemyName").text(data.name);
-            enemyBox.appendChild(enemyName);
-            document.body.appendChild(enemyBox);
         }else if(data.reason === "notification"){
             console.log("INFORMATION: " + data.notif.info);
         }
@@ -74,7 +64,7 @@ window.onload = function() {
         ws.send(message);
     }
 
-    function updateEnemy(data){
+    function updateEnemy(enemyBox, data){
         enemyBox.style.left = data.left + "px";
         enemyBox.style.top = data.top + "px";
         $("#enemyName").text(data.name);
