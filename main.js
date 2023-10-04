@@ -1,15 +1,22 @@
 window.onload = function() {
+    class Player{
+        constructor(left, top, name) {
+            this.left = left;
+            this.top = top;
+            this.name = name;
+        }
+    }
     const ws = new WebSocket('wss://projectaledav1.onrender.com');
     const playerBox1 = document.getElementById("playerBox");
-    const nameBoxS = document.getElementById("naameBoxS");
+    const nameBoxS = document.getElementById("nameBoxS");
     let enemyBox;
+    let user = new Player(playerBox1.offsetLeft, playerBox1.offsetTop, "");
     nameBoxS.onclick = function(){
         let name = $("#nameBox").val();
         $("#playerBox").text(name);
         user.name = name;
         sendData("name");
     }
-    let user = new Player(playerBox1.offsetLeft, playerBox1.offsetTop, "");
     ws.onopen = () => {
         console.log('WebSocket client connected');
         sendData("data");
@@ -36,6 +43,8 @@ window.onload = function() {
             newDiv.id = "enemyBox";
             $("body").append(newDiv);
             enemyBox = newDiv;
+        }else if(data.reason === "notification"){
+            console.log(data.info);
         }
     };
     ws.onclose = () => {
@@ -69,13 +78,5 @@ window.onload = function() {
         top: data.top + "px",
     });
         enemyBox.text(data.name);
-    }
-
-    class Player{
-        constructor(left, top, name) {
-            this.left = left;
-            this.top = top;
-            this.name = name;
-        }
     }
 }

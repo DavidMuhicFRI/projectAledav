@@ -7,7 +7,7 @@ const wss = new WebSocket.Server({ port: 8080 });
 console.log('WebSocket server is running!');
 wss.on('connection', (ws) => {
     console.log('connected');
-    ws.send(`Welcome, Client ${playerCount}!`);
+    sendData(ws, `Welcome, Client ${playerCount}!`, "notification");
     let c;
     if(playerCount % 2 === 0){
         c = new Client(playerCount, ws, null, 200, 200, " ");
@@ -15,15 +15,15 @@ wss.on('connection', (ws) => {
         clients.push(c);
         let p = new Pair(c, null);
         pairs.push(p);
-        ws.send("searching for a pair...");
+        sendData(ws, "searching for a pair...", "notification");
     }else{
         c = new Client(playerCount, ws, clients[playerCount - 1], 500, 200, " ");
         clients[playerCount - 1].pair = c;
         playerCount++;
         pairs[pairCount].p2 = c;
         pairCount++;
-        ws.send("pair found!");
-        c.pair.ws.send("pair found!");
+        sendData(ws, "pair found!", "notification");
+        sendData(ws, "pair found!", "notification");
         sendData(ws, JSON.stringify(c), "init");
         sendData(c.pair.ws,  JSON.stringify(c.pair), "init");
     }
@@ -58,11 +58,23 @@ function sendData(socket, message, reason){//poslje paru od socketa message
                 client.pair.ws.send(message);
             }
         });
+    }else if(reason === "notification"){
+        let notif = new Notification(message, socket);
+        let m = JSON.stringify(notif);
+        m["reason"] = "notification";
+        socket.send(m);
     }
 }
 function updateData(client, message){
     client.left = message.left;
     client.top = message.top;
+}
+
+class Notification{
+    constructor(info, ws) {
+        this.ws = ws
+        this.info = info;
+    }
 }
 class Client{
     constructor(id, ws, pair, left, top, name) {
