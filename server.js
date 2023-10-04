@@ -51,7 +51,7 @@ function sendData(socket, message, reason){//poslje paru od socketa message
                 client.pair.ws.send(message);
             }
         });
-    }else if(reason === "init"){
+    }else if(reason === "init" && socket.pair !== null){
         clients.forEach(function (client) {
             if (client.ws === socket) {
                 message["reason"] = "init";
@@ -60,9 +60,9 @@ function sendData(socket, message, reason){//poslje paru od socketa message
         });
     }else if(reason === "notification"){
         let notif = new Notification(message);
-        let m = JSON.stringify(notif);
-        m["reason"] = "notification";
-        socket.send(m);
+        let m = {reason: "notification", notif};
+        let mess = JSON.stringify(m);
+        socket.send(mess);
     }
 }
 function updateData(client, message){

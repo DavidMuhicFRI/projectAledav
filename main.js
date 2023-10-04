@@ -23,12 +23,8 @@ window.onload = function() {
         sendData("data");
     };
     ws.onmessage = (message) => {
-        console.log(`Received message from server: ${message}`);
-        const data = JSON.parse(message);
-        console.log("Reason : ", data.reason);
-        console.log('pairName:', data.name);
-        console.log('pairLeft:', data.left);
-        console.log('pairTop:', data.top);
+        const data = JSON.parse(message.data);
+        console.log(data);
         if(data.reason === "data"){
             updateEnemy(data);
         }else if(data.reason === "init"){
