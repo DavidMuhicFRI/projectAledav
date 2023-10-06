@@ -8,20 +8,13 @@ const wss = new WebSocket.Server({ port: 8080 });
 console.log('WebSocket server is running!');
 wss.on('connection', (ws) => {
     console.log('connected');
-        let c = new Client(playerID, ws, null, 0, 0, " ");
-        playerID++;
-        clients.push(c);
-        waiting.push(c);
-        sendData(ws, "searching for a pair..", "notification");
+    let c = new Client(playerID, ws, null, 0, 0, " ");
+    playerID++;
+    clients.push(c);
+    waiting.push(c);
+    sendData(ws, "searching for a pair..", "notification");
     ws.on('message', (message) => {
-        let decomposed = JSON.parse(message);
-        clients.forEach(function(client){
-            if(ws === client.ws){
-                updateClients(client, decomposed);
-                findPair(c);
-                sendData(ws, decomposed, decomposed.reason);
-            }
-        });
+        ws.send("accepted");
     });
 });
 function findPair(client){

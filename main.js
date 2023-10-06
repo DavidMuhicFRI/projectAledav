@@ -10,30 +10,20 @@ window.onload = function() {
     const playerBox1 = document.getElementById("playerBox");
     let enemyBox = document.getElementById("enemyBox");
     const nameBoxS = document.getElementById("nameBoxS");//button s katerim posodobimo svoje ime. Se bo odstranil ko dodamo login or simple login aka izbiro username
-    let user = new Player(playerBox1.offsetLeft, playerBox1.offsetTop, "");//glej Player class
+    let user = new Player(playerBox1.offsetLeft, playerBox1.offsetTop, "");
+    let curr =  new Date().getTime();//glej Player class
     ws.onopen = () => {
         console.log('WebSocket client connected');
-        sendData("data");
+        ws.send("start sending u PoS");
+        curr = new Date().getTime();
     };
+
     ws.onmessage = (message) => {
-        let data = JSON.parse(message.data);
-        console.log("dobljeno od serverja: ");
-        console.log(data);
-        if(data.reason === "data"){
-            enemyBox.style.left = data.object.left + "px";
-            enemyBox.style.top = data.object.top + "px";
-            $("#enemyName").text(data.object.name);
-        }else if(data.reason === "init"){
-            console.log("poskus inicializacije enemy kvadratka");
-            enemyBox.style.visibility = "visible";
-            enemyBox.style.left = data.object.left + "px";
-            enemyBox.style.top = data.object.top + "px";
-        }else if(data.reason === "notification"){
-            console.log("INFORMATION: " + data.object.info);
-        }else if(data.reason === "close"){
-            console.log("INFORMATION: " + data.object.info);
-            enemyBox.style.visibility = "hidden";
-        }
+        console.log(message);
+        const time = new Date().getTime();
+        console.log("zamika je " + curr - time);
+        curr = time;
+        ws.send("im an idiot.");
     };
     nameBoxS.onclick = function(){
         let name = $("#nameBox").val();
