@@ -76,7 +76,7 @@ function sendCount(){
 }
 function findPair(client){
     let enemy;
-    if(waiting.empty()){
+    if(!waiting.length){
         client.ws.send("notification", new Notification("no available players"));
     }else{
         enemy = waiting[0];
