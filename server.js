@@ -77,6 +77,7 @@ function findPair(client, mode){
     })
     if(completed === 0){
         console.log("no pair found");
+        client.ws.send(createJsonObject("notification", new Notification("no pair found, ur lonely asf ;-)")))
     }else if(completed === 1){
         if(mode === "find2"){
             let rand = Math.random();
