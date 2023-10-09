@@ -1,6 +1,4 @@
 const WebSocket = require('ws');
-let playerID = 0;
-let playerCount = 0;
 let runnerCount = 0;
 let hunterCount = 0;
 let pairCount = 0;
@@ -11,7 +9,6 @@ const wss = new WebSocket.Server({ port: 8080 });
 console.log('WebSocket server is running!');
 wss.on('connection', (ws) => {
     console.log('connected');
-    playerCount++;
     ws.on('message', (message) => {
         let decoded = JSON.parse(message);
         decode(ws, decoded);
@@ -28,7 +25,7 @@ function decode(ws, message) {
     } else {
         clients.forEach(function (client) {
             if (client.ws === ws) {
-                if (message.reason === "data") {
+                if (message.reason === "enemy") {
                     if (client.pair !== null) {
                         client.pair.ws.send(JSON.stringify(message));
                     }
@@ -38,7 +35,6 @@ function decode(ws, message) {
                 }else if(message.reason === "find2"){
                     findPair(client, message.reason);
                 }else if(message.reason === "close"){
-                    playerCount--;
                     clients = clients.filter((element) => element !== client);
                     pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
                     sendCount();
@@ -49,9 +45,10 @@ function decode(ws, message) {
 }
 
 function sendCount(){
+    console.log(clients);
     clients.forEach(function(client){
         client.ws.send(createJsonObject("counter", {
-            playerCount: playerCount,
+            playerCount: clients.length,
             runnerCount: runnerCount,
             hunterCount: hunterCount
         }))
