@@ -12,8 +12,6 @@ wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         let decoded = JSON.parse(message);
         decode(ws, decoded);
-        console.log("we got a message!");
-        console.log(decoded);
     });
 });
 
@@ -40,6 +38,14 @@ function decode(ws, message) {
                     clients = clients.filter((element) => element !== client);
                     pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
                     sendCount();
+                }else if(message.reason === "rejected"){
+                    waiting.push(client);
+                    waiting.push(client.pair);
+                    pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
+                    client.pair.ws.send(createJsonObject("rejected", new Notification("opponent has rejected")));
+                }else if(message.reason === "accepted"){
+                    client.pair.ws.send(createJsonObject("accepted", new Notification("opponent has accepted")));
+                    client.ws.send(createJsonObject("accepted", new Notification("opponent has accepted")));
                 }
             }
         });
@@ -47,7 +53,14 @@ function decode(ws, message) {
 }
 
 function sendCount(){
-    console.log(clients.length);
+    clients.forEach(function(client){
+        if(client.player.preference === "hunter"){
+            hunterCount++;
+        }else if(client.player.preference === "runner"){
+            runnerCount++;
+        }
+    })
+    console.log(clients);
     clients.forEach(function(client){
         client.ws.send(createJsonObject("counter", {
             playerCount: clients.length,
@@ -55,6 +68,8 @@ function sendCount(){
             hunterCount: hunterCount
         }))
     })
+    hunterCount = 0;
+    runnerCount = 0;
 }
 function findPair(client, mode){
     let completed = 0;
