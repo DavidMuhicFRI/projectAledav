@@ -12,6 +12,8 @@ wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         let decoded = JSON.parse(message);
         decode(ws, decoded);
+        console.log("we got a message!");
+        console.log(decoded);
     });
 });
 
