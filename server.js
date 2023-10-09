@@ -45,7 +45,7 @@ function decode(ws, message) {
 }
 
 function sendCount(){
-    console.log(clients);
+    console.log(clients.length);
     clients.forEach(function(client){
         client.ws.send(createJsonObject("counter", {
             playerCount: clients.length,
