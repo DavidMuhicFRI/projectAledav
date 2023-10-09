@@ -29,23 +29,26 @@ function decode(ws, message) {
                     if (client.pair !== null) {
                         client.pair.ws.send(JSON.stringify(message));
                     }
-                } else if (message.reason === "find1") {
+                } else if (message.reason === "find") {
                     waiting.push(client);
-                    findPair(client, message.reason);
-                }else if(message.reason === "find2"){
-                    findPair(client, message.reason);
+                    findPair(client);
                 }else if(message.reason === "close"){
                     clients = clients.filter((element) => element !== client);
                     pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
+                    client.pair.ws.send("gameOver", new Notification("ur bro left u"));
                     sendCount();
                 }else if(message.reason === "rejected"){
-                    waiting.push(client);
                     waiting.push(client.pair);
                     pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
                     client.pair.ws.send(createJsonObject("rejected", new Notification("opponent has rejected")));
                 }else if(message.reason === "accepted"){
-                    client.pair.ws.send(createJsonObject("accepted", new Notification("opponent has accepted")));
-                    client.ws.send(createJsonObject("accepted", new Notification("opponent has accepted")));
+                    client.status = "accepted";
+                    if(client.pair.status === "accepted"){
+                        client.pair.ws.send(createJsonObject("accepted", new Notification("opponent has accepted, game is beginning")));
+                        client.ws.send(createJsonObject("accepted", new Notification("opponent has accepted, game is beginning")));
+                    }else{
+                        client.ws.send(createJsonObject("accepted", new Notification("waiting for enemy...")));
+                    }
                 }
             }
         });
@@ -71,64 +74,31 @@ function sendCount(){
     hunterCount = 0;
     runnerCount = 0;
 }
-function findPair(client, mode){
-    let completed = 0;
-    let right;
-    let kindaRight;
-    waiting.forEach(function(waiter){
-        if(completed < 2 && waiter !== client){
-            if(completed === 0){
-                kindaRight = waiter;
-                completed++;
-            }
-            if(completed === 1){
-                if(client.player.preference !== waiter.player.preference){
-                    right = waiter;
-                    completed++;
-                }
-            }
-        }
-    })
-    if(completed === 0){
-        console.log("no pair found");
-        client.ws.send(createJsonObject("notification", new Notification("no pair found, ur lonely asf ;-)")))
-    }else if(completed === 1){
-        if(mode === "find2"){
-            let rand = Math.random();
-            if(rand > 0.5){
-                client.player.type = "hunter";
-                kindaRight.player.type = "runner";
-            }else{
-                client.player.type = "runner";
-                kindaRight.player.type = "hunter";
-            }
-            client.pair = kindaRight;
-            kindaRight.pair = client;
-            waiting = waiting.filter((element) => element !== kindaRight && element !== client);
-            let pair = new Pair(client, kindaRight);
-            pairs.push(pair);
-            client.ws.send(createJsonObject("notification", new Notification("pair found!")));
-            client.ws.send(createJsonObject("enemy", kindaRight.player));
-            kindaRight.ws.send(createJsonObject("notification", new Notification("pair found!")));
-            kindaRight.ws.send(createJsonObject("enemy", client.player));
-            console.log("completed inicialization of a pair");
-        }else{
-            client.ws.send(createJsonObject("found2", {}));
-        }
+function findPair(client){
+    let enemy;
+    if(waiting.empty()){
+        client.ws.send("notification", new Notification("no available players"));
     }else{
-        client.pair = right;
-        right.pair = client;
-        client.player.type = client.player.preference;
-        right.player.type = right.player.preference;
-        waiting = waiting.filter((element) => element !== right && element !== client);
-        let pair = new Pair(client, right);
-        pairs.push(pair);
-        client.ws.send(createJsonObject("notification", new Notification("pair found!")));
-        client.ws.send(createJsonObject("enemy", right.player));
-        right.ws.send(createJsonObject("notification", new Notification("pair found!")));
-        right.ws.send(createJsonObject("enemy", client.player));
-        console.log("completed inicialization of a pair");
+        enemy = waiting[0];
     }
+    let rand = Math.random();
+    if(rand > 0.5){
+        enemy.player.type = "runner";
+        client.player.type = "hunter";
+    }else{
+        client.player.type = "runner";
+        enemy.player.type = "hunter";
+    }
+    client.pair = enemy;
+    enemy.pair = client;
+    waiting = waiting.filter((element) => element !== enemy && element !== client);
+    let pair = new Pair(client, enemy);
+    pairs.push(pair);
+    client.ws.send(createJsonObject("notification", new Notification("pair found!")));
+    client.ws.send(createJsonObject("found", enemy.player));
+    enemy.ws.send(createJsonObject("notification", new Notification("pair found!")));
+    enemy.ws.send(createJsonObject("found", client.player));
+    console.log("completed inicialization of a pair");
 }
 
 function createJsonObject(reason, object){
@@ -169,6 +139,7 @@ class Client{
         this.ws = ws;
         this.player = player;
         this.pair = pair;
+        this.status = "none";
     }
 }
 
@@ -201,7 +172,6 @@ class Player {
         this.color = "red";
         this.skin = "basic";
         this.score = 0;
-        this.preference = "none";
     }
 }
 class Pair{
