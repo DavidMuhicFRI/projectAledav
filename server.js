@@ -34,7 +34,9 @@ function decode(ws, message) {
                 }else if(message.reason === "close"){
                     clients = clients.filter((element) => element !== client);
                     pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
-                    client.pair.ws.send("gameOver", new Notification("ur bro left u"));
+                    if(client.pair !== null) {
+                        client.pair.ws.send("gameOver", new Notification("ur bro left u"));
+                    }
                     sendCount();
                 }else if(message.reason === "rejected"){
                     waiting.push(client.pair);
@@ -76,7 +78,7 @@ function sendCount(){
 function findPair(client){
     let enemy;
     if(waiting.length < 2){
-        client.ws.send("notification", new Notification("no available players"));
+        client.ws.send(createJsonObject("notification", new Notification("no available players")));
     }else {
         for (let i = 0; i < waiting.length; i++) {
             if (waiting[i] !== client) {
