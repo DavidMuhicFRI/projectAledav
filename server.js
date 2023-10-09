@@ -24,13 +24,7 @@ function decode(ws, message) {
         let c = new Client(ws, p, null);
         updatePlayer(p, message);
         clients.push(c);
-        clients.forEach(function(client){
-            client.ws.send(createJsonObject("counter", {
-                playerCount: playerCount,
-                runnerCount: runnerCount,
-                hunterCount: hunterCount
-            }))
-        })
+        sendCount();
     } else {
         clients.forEach(function (client) {
             if (client.ws === ws) {
@@ -43,10 +37,25 @@ function decode(ws, message) {
                     findPair(client, message.reason);
                 }else if(message.reason === "find2"){
                     findPair(client, message.reason);
+                }else if(message.reason === "close"){
+                    playerCount--;
+                    clients = clients.filter((element) => element !== client);
+                    pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
+                    sendCount();
                 }
             }
         });
     }
+}
+
+function sendCount(){
+    clients.forEach(function(client){
+        client.ws.send(createJsonObject("counter", {
+            playerCount: playerCount,
+            runnerCount: runnerCount,
+            hunterCount: hunterCount
+        }))
+    })
 }
 function findPair(client, mode){
     let completed = 0;
