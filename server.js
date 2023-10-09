@@ -90,13 +90,13 @@ function findPair(client, mode){
             waiting = waiting.filter((element) => element !== kindaRight && element !== client);
             let pair = new Pair(client, kindaRight);
             pairs.push(pair);
-            sendData(client.ws, "pair found!", "notification");
-            sendData(kindaRight.ws, "pair found!", "notification");
-            sendData(kindaRight.ws, kindaRight.player, "found1");//send the info about the other pair
-            sendData(client.ws,  client.player, "found1");
+            client.ws.send(createJsonObject("notification", new Notification("pair found!")));
+            client.ws.send(createJsonObject("enemy", kindaRight.player));
+            kindaRight.ws.send(createJsonObject("notification", new Notification("pair found!")));
+            kindaRight.ws.send(createJsonObject("enemy", client.player));
             console.log("completed inicialization of a pair");
         }else{
-            sendData(client.ws, "didnt find the right pair", "found2");
+            client.ws.send(createJsonObject("found2", {}));
         }
     }else{
         client.pair = right;
@@ -106,37 +106,12 @@ function findPair(client, mode){
         waiting = waiting.filter((element) => element !== right && element !== client);
         let pair = new Pair(client, right);
         pairs.push(pair);
-        sendData(client.ws, "pair found!", "found1");
-        sendData(right.ws, "pair found!", "found1");
-        sendData(right.ws, right.player, "init");//send the info about the other pair
-        sendData(client.ws,  client.player, "init");
+        client.ws.send(createJsonObject("notification", new Notification("pair found!")));
+        client.ws.send(createJsonObject("enemy", right.player));
+        right.ws.send(createJsonObject("notification", new Notification("pair found!")));
+        right.ws.send(createJsonObject("enemy", client.player));
         console.log("completed inicialization of a pair");
     }
-}
-function sendData(socket, message, reason){
-    clients.forEach(function (client) {
-        if (client.ws === socket) {
-            if(reason === "data") {
-                if(client.pair !== null) {
-                    client.pair.ws.send(JSON.stringify(createJsonObject(reason, message)));
-                }
-            }else if(reason === "init"){
-                client.pair.ws.send(JSON.stringify(createJsonObject(reason, message)));
-            }else if(reason === "notification"){
-                let notif = new Notification(message);
-                socket.send(JSON.stringify(createJsonObject(reason, notif)));
-            }else if(reason === "close"){
-                console.log("a client left");
-                clients = clients.filter((c) => c !== client);
-                let notif = new Notification("your partner left ;-( waiting for another session");
-                client.pair.ws.send(JSON.stringify(createJsonObject(reason, notif)));
-                waiting.push(client.pair);
-                findPair(client.pair);
-                pairCount--;
-                pairs = pairs.filter((pair) => pair.p1 !== client && pair.p2 !== client);
-            }
-        }
-    });
 }
 
 function createJsonObject(reason, object){
