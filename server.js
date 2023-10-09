@@ -1,7 +1,6 @@
 const WebSocket = require('ws');
 let runnerCount = 0;
 let hunterCount = 0;
-let pairCount = 0;
 let clients = [];
 let pairs = [];
 let waiting = [];
@@ -77,33 +76,33 @@ function sendCount(){
 function findPair(client){
     let enemy;
     if(waiting.length < 2){
-        client.ws.send("notification", new Notification("no available players..."));
-    }else{
-        for(let i = 0; i < waiting.length; i++){
-            if(waiting[i] !== client){
+        client.ws.send("notification", new Notification("no available players"));
+    }else {
+        for (let i = 0; i < waiting.length; i++) {
+            if (waiting[i] !== client) {
                 enemy = waiting[i];
                 break;
             }
         }
+        let rand = Math.random();
+        if (rand > 0.5) {
+            enemy.player.type = "runner";
+            client.player.type = "hunter";
+        } else {
+            client.player.type = "runner";
+            enemy.player.type = "hunter";
+        }
+        client.pair = enemy;
+        enemy.pair = client;
+        waiting = waiting.filter((element) => element !== enemy && element !== client);
+        let pair = new Pair(client, enemy);
+        pairs.push(pair);
+        client.ws.send(createJsonObject("notification", new Notification("pair found!")));
+        client.ws.send(createJsonObject("found", enemy.player));
+        enemy.ws.send(createJsonObject("notification", new Notification("pair found!")));
+        enemy.ws.send(createJsonObject("found", client.player));
+        console.log("completed inicialization of a pair");
     }
-    let rand = Math.random();
-    if(rand > 0.5){
-        enemy.player.type = "runner";
-        client.player.type = "hunter";
-    }else{
-        client.player.type = "runner";
-        enemy.player.type = "hunter";
-    }
-    client.pair = enemy;
-    enemy.pair = client;
-    waiting = waiting.filter((element) => element !== enemy && element !== client);
-    let pair = new Pair(client, enemy);
-    pairs.push(pair);
-    client.ws.send(createJsonObject("notification", new Notification("pair found!")));
-    client.ws.send(createJsonObject("found", enemy.player));
-    enemy.ws.send(createJsonObject("notification", new Notification("pair found!")));
-    enemy.ws.send(createJsonObject("found", client.player));
-    console.log("completed inicialization of a pair");
 }
 
 function createJsonObject(reason, object){
