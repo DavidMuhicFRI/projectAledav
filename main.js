@@ -11,20 +11,24 @@ window.onload = function() {
     let enemyBox = document.getElementById("enemyBox");
     const nameBoxS = document.getElementById("nameBoxS");//button s katerim posodobimo svoje ime. Se bo odstranil ko dodamo login or simple login aka izbiro username
     let user = new Player(playerBox1.offsetLeft, playerBox1.offsetTop, "");
-    let curr =  new Date().getTime();//glej Player class
+    let counter = 0;
+    let avg = 0;
+    let interval = 0;
     ws.onopen = () => {
-        console.log('WebSocket client connected');
         ws.send("start sending u PoS");
-        curr = new Date().getTime();
     };
 
     ws.onmessage = (message) => {
-        console.log(message);
-        const time = new Date().getTime();
-        console.log("zamika je " + curr - time);
-        curr = time;
+        counter++;
+        avg++;
         ws.send("im an idiot.");
     };
+    setInterval(function(){
+        interval++;
+        console.log("counter v 1 sec " + counter + ", kar je 1 request na " + 1000/ counter + "ms");
+        console.log("average = " + avg / interval + ", kar je 1 request na " + 1000/ (avg / interval) + "ms")
+        counter = 0;
+    }, 1000);
     nameBoxS.onclick = function(){
         let name = $("#nameBox").val();
         $("#playerName").text(name);
