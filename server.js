@@ -43,15 +43,6 @@ function decode(ws, message) {
                     findPair(client, message.reason);
                 }else if(message.reason === "find2"){
                     findPair(client, message.reason);
-                } else if (reason === "close") {
-                    console.log("a client left");
-                    clients = clients.filter((c) => c !== client);
-                    let notif = new Notification("your partner left ;-( waiting for another session");
-                    client.pair.ws.send(JSON.stringify(createJsonObject(reason, notif)));
-                    waiting.push(client.pair);
-                    findPair(client.pair);
-                    pairCount--;
-                    pairs = pairs.filter((pair) => pair.p1 !== client && pair.p2 !== client);
                 }
             }
         });
