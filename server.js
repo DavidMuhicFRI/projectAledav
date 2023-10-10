@@ -42,12 +42,12 @@ function decode(ws, message) {
                     waiting.push(client.pair);
                     pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
                     client.pair.ws.send(createJsonObject("rejected", new Notification("opponent has rejected")));
+                    client.ws.send(createJsonObject("rejected", new Notification("I rejected")));
                     client.pair.status = "none";
                     client.status = "none";
                 }else if(message.reason === "playerAccepted"){
                     client.status = "accepted";
                     client.pair.ws.send(createJsonObject("enemyAccepted", new Notification("enemy has accepted")));
-                    console.log("got data")
                     if(client.pair.status === "accepted"){
                         client.pair.ws.send(createJsonObject("bothAccepted", new Notification("opponent has accepted, game is beginning")));
                         client.ws.send(createJsonObject("bothAccepted", new Notification("opponent has accepted, game is beginning")));
