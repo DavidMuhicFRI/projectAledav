@@ -29,8 +29,10 @@ function decode(ws, message) {
                         client.pair.ws.send(JSON.stringify(message));
                     }
                 } else if (message.reason === "find") {
-                    waiting.push(client);
-                    findPair(client);
+                    if(client.status === "none"){
+                        waiting.push(client);
+                        findPair(client);
+                    }
                 }else if(message.reason === "close"){
                     clients = clients.filter((element) => element !== client);
                     pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
@@ -58,6 +60,8 @@ function decode(ws, message) {
                     }
                 } else if(message.reason === "enemyAccepted"){
                 }
+                console.log(client.status);
+                console.log(client.pair.status);
             }
         });
     }
@@ -85,7 +89,7 @@ function sendCount(){
 function findPair(client){
     let enemy;
     if(waiting.length < 2){
-        client.ws.send(createJsonObject("notification", new Notification("no available players")));
+        client.ws.send(createJsonObject("notification", new Notification("no available players yet")));
     }else {
         for (let i = 0; i < waiting.length; i++) {
             if (waiting[i] !== client) {
