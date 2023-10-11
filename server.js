@@ -61,7 +61,6 @@ function decode(ws, message) {
                 } else if(message.reason === "enemyAccepted"){
                 }
                 console.log(client.status);
-                console.log(client.pair.status);
             }
         });
     }
