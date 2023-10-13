@@ -48,7 +48,7 @@ function decode(ws, message) {
                     client.pair.status = "waiting";
                     client.status = "none";
                     client.pair.pair = null;
-                    client.pair= null;
+                    client.pair = null;
                 }else if(message.reason === "playerAccepted"){
                     console.log(client.status);
                     client.status = "accepted";
