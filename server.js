@@ -43,7 +43,7 @@ function decode(ws, message) {
                 }else if(message.reason === "rejected"){
                     waiting.push(client.pair);
                     pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
-                    client.pair.ws.send(createJsonObject("rejected", new Notification("opponent has rejected")));
+                    client.pair.ws.send(createJsonObject("enemyRejected", new Notification("opponent has rejected")));
                     client.ws.send(createJsonObject("rejected", new Notification("I rejected")));
                     client.pair.status = "waiting";
                     client.status = "none";
