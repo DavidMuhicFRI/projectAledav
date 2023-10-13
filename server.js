@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const pakoChan = require('pako');
+const pako = require('pako');
 let runnerCount = 0;
 let hunterCount = 0;
 let clients = [];
@@ -10,7 +10,7 @@ console.log('WebSocket server is running!');
 wss.on('connection', (ws) => {
     console.log('connected');
     ws.on('message', (message) => {
-        let decompressedMessage = pakoChan.inflate(message);
+        let decompressedMessage = pako.inflate(message, { to: 'string' });
         let decoded = JSON.parse(decompressedMessage);
         decode(ws, decoded);
     });
