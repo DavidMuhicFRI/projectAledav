@@ -48,6 +48,7 @@ function decode(ws, message) {
                     client.pair.status = "none";
                     client.status = "none";
                 }else if(message.reason === "playerAccepted"){
+                    console.log(client.status);
                     client.status = "accepted";
                     client.pair.ws.send(createJsonObject("enemyAccepted", new Notification("enemy has accepted")));
                     if(client.pair.status === "accepted"){
@@ -58,9 +59,8 @@ function decode(ws, message) {
                     }else{
                         client.ws.send(createJsonObject("playerAccepted", new Notification("waiting for enemy...")));
                     }
-                } else if(message.reason === "enemyAccepted"){
                 }
-                console.log(client.status);
+                console.log(waiting);
             }
         });
     }
