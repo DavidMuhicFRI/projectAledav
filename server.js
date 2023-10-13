@@ -134,8 +134,7 @@ function updatePlayer(player, message) {
     player.color = message.object.color;
     player.skin = message.object.skin;
     player.score = message.object.score;
-    player.preference = message.object.preference;
-
+    player.type = message.object.type;
 }
 
 class Notification{
@@ -184,6 +183,7 @@ class Player {
         this.score = 0;
     }
 }
+
 class Pair{
     constructor(p1, p2) {
         this.p1 = p1;
