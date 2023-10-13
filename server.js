@@ -9,7 +9,8 @@ console.log('WebSocket server is running!');
 wss.on('connection', (ws) => {
     console.log('connected');
     ws.on('message', (message) => {
-        let decoded = JSON.parse(message);
+        let decompressedMessage = pako.inflate(message);
+        let decoded = JSON.parse(decompressedMessage);
         decode(ws, decoded);
     });
 });
