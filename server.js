@@ -26,7 +26,7 @@ function decode(ws, message) {
     } else {
         clients.forEach(function (client) {
             if (client.ws === ws) {
-                if (message.reason === "enemy") {
+                if (message.reason === "enemy" || message.reason === "enemyChange") {
                     if (client.pair !== null) {
                         client.pair.ws.send(JSON.stringify(message));
                     }
