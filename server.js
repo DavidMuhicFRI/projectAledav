@@ -24,11 +24,11 @@ function decode(ws, message) {
     } else {
         clients.forEach(function (client) {
             if (client.ws === ws) {
-                if (message.reason === "enemy" || message.reason === "enemyChange") {
+                if (message.reason === "enemyChange" || message.reason === "enemyInit") {
                     if (client.pair !== null) {
                         client.pair.ws.send(JSON.stringify(message));
                     }
-                } else if (message.reason === "find") {
+                }else if (message.reason === "find") {
                     if(client.status === "none"){
                         waiting.push(client);
                     }
@@ -62,7 +62,6 @@ function decode(ws, message) {
                         client.ws.send(createJsonObject("playerAccepted", new Notification("waiting for enemy...")));
                     }
                 }
-                console.log(waiting);
             }
         });
     }
@@ -178,7 +177,7 @@ class Player {
             this.jumpHeight = 13;
             this.movement = 5;
         }
-        this.color = "red";
+        this.color = "none";
         this.skin = "basic";
         this.score = 0;
     }
