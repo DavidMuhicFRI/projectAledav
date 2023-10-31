@@ -45,11 +45,17 @@ function decode(ws, message) {
                     pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
                     client.pair.ws.send(createJsonObject("enemyRejected", new Notification("opponent has rejected")));
                     client.ws.send(createJsonObject("rejected", new Notification("I rejected")));
-                    client.pair.status = "waiting";
+                    client.pair.pair = null;
+                    client.status = "none";
+                    client.pair = null;
+                }else if(message.reason === "timeout"){
+                    pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
+                    client.pair.ws.send(createJsonObject("timeout", new Notification("timed out")));
                     client.status = "none";
                     client.pair.pair = null;
                     client.pair = null;
-                }else if(message.reason === "playerAccepted"){
+                }
+                else if(message.reason === "playerAccepted"){
                     console.log(client.status);
                     client.status = "accepted";
                     client.pair.ws.send(createJsonObject("enemyAccepted", new Notification("enemy has accepted")));
