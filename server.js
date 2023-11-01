@@ -50,7 +50,8 @@ function decode(ws, message) {
                     client.pair = null;
                 }else if(message.reason === "timeout"){
                     pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
-                    client.pair.ws.send(createJsonObject("timeout", new Notification("timed out")));
+                    client.pair.ws.send(createJsonObject("enemyRejected", new Notification("enemy timed out")));
+                    client.ws.send(createJsonObject("timeout", new Notification("timed out")))
                     client.status = "none";
                     client.pair.pair = null;
                     client.pair = null;
