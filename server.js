@@ -31,6 +31,7 @@ function decode(ws, message) {
                 }else if (message.reason === "find") {
                     if(client.status === "none"){
                         waiting.push(client);
+                        console.log("waiting: " + waiting)
                     }
                     findPair(client);
                 }else if(message.reason === "close"){
@@ -51,13 +52,12 @@ function decode(ws, message) {
                 }else if(message.reason === "timeout"){
                     pairs = pairs.filter((element) => element.p1 !== client && element.p2 !== client);
                     client.pair.ws.send(createJsonObject("enemyRejected", new Notification("enemy timed out")));
-                    client.ws.send(createJsonObject("timeout", new Notification("timed out")))
+                    client.ws.send(createJsonObject("timeout", new Notification("timed out")));
                     client.status = "none";
                     client.pair.pair = null;
                     client.pair = null;
                 }
                 else if(message.reason === "playerAccepted"){
-                    console.log(client.status);
                     client.status = "accepted";
                     client.pair.ws.send(createJsonObject("enemyAccepted", new Notification("enemy has accepted")));
                     if(client.pair.status === "accepted"){
@@ -68,6 +68,10 @@ function decode(ws, message) {
                     }else{
                         client.ws.send(createJsonObject("playerAccepted", new Notification("waiting for enemy...")));
                     }
+                } else if(message.reason === "gameOver"){
+                    client.pair.ws.send(createJsonObject("gameOver", new Notification("gameOver")));
+                    client.pair = null;
+                    client.pair.pair = null;
                 }
             }
         });
